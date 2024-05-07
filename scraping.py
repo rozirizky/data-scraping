@@ -1,6 +1,7 @@
 import asyncio
 from playwright.async_api import async_playwright, Playwright,Page
 from bs4 import BeautifulSoup
+import pandas as pd
 
 async def parse_html(page:Page):
     html = await page.inner_html('#shop')
@@ -80,11 +81,12 @@ async def product(page:Page):
 
 async def run(playwright: Playwright):
     webkit = playwright.chromium
-    browser = await webkit.launch()
+    browser = await webkit.launch(headless=False)
     context = await browser.new_context()
     page = await context.new_page()
     data = await product(page)
-    print(data)
+    df = pd.DataFrame(data)
+    df.to_csv("produk.csv")
 
     await browser.close()
 
